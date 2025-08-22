@@ -2,6 +2,8 @@
 import pandas as pd
 from sklearn.preprocessing import StandardScaler
 from sklearn.cluster import KMeans
+from sklearn.pipeline import Pipeline
+from joblib import dump
 
 #%%
 # extract
@@ -10,9 +12,14 @@ clientes = pd.read_parquet('data/clientes_clickbus.parquet')
 
 #%%
 # pipeline
-scaler = StandardScaler()
-clientes_scaled = scaler.fit_transform(clientes[['recencia', 'frequencia', 'monetario']])
-kmeans = KMeans(n_clusters=4, random_state=42)
-clientes['cluster'] = kmeans.fit_predict(clientes_scaled)
+pipeline = Pipeline([
+    ('scaler', StandardScaler()),
+    ('kmeans', KMeans(n_clusters=4, random_state=42))
+])
 
-# clientes['cluster_label'] = clientes['cluster']
+# Treinar o pipeline
+pipeline.fit(clientes[['recencia', 'frequencia', 'monetario', 'ticket_medio']])
+
+#%%
+# Salvar pipeline completo
+dump(pipeline, 'models/pipeline_kmeans_clientes.joblib')
