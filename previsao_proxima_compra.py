@@ -24,4 +24,4 @@ mdl.fit(X, y)
 
 #%%
 # save model
-joblib.dump(mdl, 'model/modelo_compra_30d.joblib')
+joblib.dump(mdl, 'models/modelo_compra_30d.joblib')

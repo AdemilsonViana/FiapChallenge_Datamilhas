@@ -4,7 +4,7 @@ import joblib
 
 #%%
 # data
-base = pd.read_csv('data/base_clickbus_brutos.csv')
+base = pd.read_parquet('data/base_clickbus_tratada.parquet')
 
 clientes = pd.read_parquet('data/clientes_clickbus.parquet')
 features = ['recencia', 'frequencia', 'monetario', 'ticket_medio']
@@ -35,6 +35,17 @@ clientes_rotas['_pred_rota_30d'] = (clientes_rotas['_prob_rota_30d'] >= 0.5).ast
     # remover rótulo
 clientes.drop(columns='comprou_30d')
 
-base.to_parquet('final_data/base_clickbus.parquet', index=False)
-clientes_rotas.to_parquet('final_data/clientes_rotas.parquet', index=False)
-clientes.to_parquet('final_data/clientes_clickbus.parquet', index=False)
+    # selecionando a melhor rota por cliente
+idx = clientes_rotas.groupby('fk_contact')['_prob_rota_30d'].idxmax()
+clientes_rotas = clientes_rotas.loc[idx].reset_index(drop=True)
+
+colunas_rotas = ['fk_contact', 'rota', '_prob_rota_30d', '_pred_rota_30d']
+clientes = clientes.merge(
+    clientes_rotas[colunas_rotas],
+    left_on='fk_contact',
+    right_on='fk_contact',
+    how='left'
+)
+
+base.to_csv('final_data/base_clickbus.csv', index=False)
+clientes.to_csv('final_data/clientes_clickbus.csv', index=False)
