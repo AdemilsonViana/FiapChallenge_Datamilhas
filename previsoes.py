@@ -47,5 +47,5 @@ clientes = clientes.merge(
     how='left'
 )
 
-base.to_csv('final_data/base_clickbus.csv', index=False)
-clientes.to_csv('final_data/clientes_clickbus.csv', index=False)
+base.to_parquet('final_data/base_clickbus.parquet', index=False)
+clientes.to_parquet('final_data/clientes_clickbus.parquet', index=False)

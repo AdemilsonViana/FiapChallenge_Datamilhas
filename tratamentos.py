@@ -35,7 +35,7 @@ futuro = base[(base['date_purchase'] > data_ref) & (base['date_purchase'] <= ult
 #%%
 # tabela de clientes
 clientes = (
-    historico
+    base
     .groupby('fk_contact')
     .agg(
         recencia=('date_purchase', lambda x: (data_ref - x.max()).days),
@@ -54,7 +54,7 @@ clientes['ticket_medio'] = clientes['monetario'] / clientes['frequencia']
 #%%
 # tabela clientes_rotas
 clientes_rotas = (
-    historico
+    base
     .groupby(['fk_contact', 'rota'])
     .agg(
         freq_rota=('date_purchase', 'count'),
